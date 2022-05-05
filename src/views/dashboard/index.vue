@@ -1,20 +1,28 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ name }}</div>
+    <div class="">
+      <word-cloud-chart />
+      <map-chart />
+    </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
+import MapChart from './charts/MapChart';
+import WordCloudChart from './charts/WordCloudChart';
 
 export default {
   name: 'Dashboard',
+  components: {
+    MapChart,
+    WordCloudChart,
+  },
   computed: {
-    ...mapGetters([
-      'name'
-    ])
-  }
-}
+    ...mapGetters(['name']),
+  },
+};
 </script>
 
 <style lang="scss" scoped>
