@@ -65,16 +65,22 @@ export const constantRoutes = [
     meta: { title: 'Example', icon: 'el-icon-s-help' },
     children: [
       {
-        path: '订单列表',
+        path: 'table1',
         name: '订单列表',
         component: () => import('@/views/table/index'),
         meta: { title: '订单列表', icon: 'table' },
       },
       {
-        path: '用户列表',
-        name: '用户列表',
+        path: 'table2',
+        name: '客户列表',
         component: () => import('@/views/table/index2'),
-        meta: { title: '用户列表', icon: 'table' },
+        meta: { title: '客户列表', icon: 'table' },
+      },
+      {
+        path: 'table3',
+        name: '电机总类',
+        component: () => import('@/views/table/index3'),
+        meta: { title: '电机总类', icon: 'table' },
       },
       {
         path: 'tree',

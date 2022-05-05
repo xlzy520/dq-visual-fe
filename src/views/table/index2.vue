@@ -6,8 +6,8 @@
         <el-form-item label="店铺名称" prop="shopName">
           <el-input v-model="formInline.shopName" placeholder="店铺名称" />
         </el-form-item>
-        <el-form-item label="用户名称" prop="name">
-          <el-input v-model="formInline.name"></el-input>
+        <el-form-item label="用户名称" prop="username">
+          <el-input v-model="formInline.username"></el-input>
         </el-form-item>
         <el-form-item>
           <!--          搜索：先把要搜索的数据传给后台，后台反馈回来，把后台数据赋值给表格数据-->
@@ -25,13 +25,12 @@
     </div>
     <!--    列表栏-->
     <el-table v-loading="loading" :data="tableData" element-loading-text="Loading" border fit highlight-current-row>
-      <el-table-column prop="numbering" align="center" label="ID" width="95"> </el-table-column>
-      <el-table-column prop="name1" label="店铺名称" width="120" />
-      <el-table-column prop="name2" label="用户名称" width="100" />
-      <el-table-column prop="price" label="订单价格" width="100" />
-      <el-table-column prop="PaymentStatus" label="支付状态" width="110" />
-      <el-table-column prop="address2" label="店铺地址" width="250" />
-      <el-table-column prop="address1" label="收货地址" width="250" />
+      <!--      <el-table :data="tableData" highlight-current-row @current-change="handleCurrentChange" style="width: 100%">-->
+      <el-table-column prop="shopName" label="店铺名称" width="120" />
+      <el-table-column prop="shopAddress" label="店铺地址" width="250" />
+      <el-table-column prop="username" label="用户名称" width="100" />
+      <el-table-column prop="phoneNumber" label="电话号码" width="120" />
+      <el-table-column prop="address" label="收货地址" width="250" />
       <el-table-column prop="action" label="操作" align="center">
         <!--slot插槽，用#代替了并给了参数row，这里都用row来写        -->
         <template v-slot="{ row }">
@@ -48,36 +47,28 @@
       </el-table-column>
     </el-table>
     <!--    分页-->
-    <!--    <el-pagination-->
-    <!--      v-model:currentPage="currentPage"-->
-    <!--      :page-size="10"-->
-    <!--      layout="total, prev, pager, next"-->
-    <!--      :total="total"-->
-    <!--      @current-change="getData"-->
-    <!--    />-->
     <div class="block">
-      <!--      <span class="demonstration">页数较少时的效果</span>-->
-      <el-pagination :page-size="10" layout="prev, pager, next" :total="50" @current-change="changePage">
+      <el-pagination :page-size="10" layout="prev, pager, next" :total="total" @current-change="changePage">
       </el-pagination>
     </div>
     <!--    新增栏/编辑栏 是2.几版本的和3,。几的不一样-->
     <!--    :visible.sync和v-model-->
     <el-dialog title="客户信息编辑" :visible.sync="dialogFormVisible">
-      <el-form ref="dialogForm" :model="form" label-width="80px" class="form">
-        <el-form-item label="店铺名称">
+      <el-form ref="dialogForm" :model="form" label-width="80px" class="form" :rules="rules">
+        <el-form-item label="店铺名称" prop="shopName">
           <el-input v-model="form.shopName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="店铺地址">
+        <el-form-item label="店铺地址" prop="shopAddress" placeholder="请填写地址">
           <el-input v-model="form.shopAddress" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="用户名称">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+        <el-form-item label="用户名称" prop="username">
+          <el-input v-model="form.username" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="联系电话">
+        <el-form-item label="联系电话" prop="phoneNumber">
           <el-input v-model="form.phoneNumber" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="收货地址">
-          <el-input v-model="form.address1" autocomplete="off"></el-input>
+        <el-form-item label="收货地址" prop="address" placeholder="请填写地址">
+          <el-input v-model="form.address" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="form.remarks" autocomplete="off" type="textarea"></el-input>
@@ -86,7 +77,7 @@
       <template #footer>
         <!--        当他为f的时候看不见，当他为T的时候出现-->
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submit">确 定</el-button>
+        <el-button type="primary" @click="submit(form)">确 定</el-button>
       </template>
     </el-dialog>
   </div>
@@ -96,6 +87,7 @@
 import { Message } from 'element-ui';
 import { getList } from '@/api/table';
 import axios from 'axios';
+import request from '@/utils/request';
 
 export default {
   filters: {
@@ -113,22 +105,36 @@ export default {
       //搜索栏
       formInline: {
         shopName: '',
-        name: '',
+        username: '',
       },
       //新增栏
       type: 'add', // edit
       dialogFormVisible: false,
       form: {
         shopName: '', //店铺名称
-        name: '', //用户名称
+        username: '', //用户名称
         shopAddress: '', //店铺地址
-        address1: '', //收货地址
+        address: '', //收货地址
         phoneNumber: '', //电话号码
         remarks: '', //备注
       },
       loading: false,
       tableData: null,
       currentPage: 1,
+      total: 0,
+      rules: {
+        shopName: [
+          { required: true, message: '请输入店铺名称', trigger: 'blur' },
+          { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' },
+        ],
+        username: [
+          { required: true, message: '请输入用户名称', trigger: 'blur' },
+          { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' },
+        ],
+        shopAddress: [{ required: true, message: '请填写地址', trigger: 'blur' }],
+        address: [{ required: true, message: '请填写地址', trigger: 'blur' }],
+        phoneNumber: [{ required: true, message: '请填写电话号码', trigger: 'blur' }],
+      },
     };
   },
   created() {
@@ -144,11 +150,10 @@ export default {
     //搜索
     getData() {
       this.loading = true;
-      //还未做
-      axios
-        .post('http://localhost:5000/users/page', {
+      request
+        .post('order/page', {
           shopName: this.formInline.shopName,
-          name: this.formInline.name,
+          username: this.formInline.username,
           pageNum: this.currentPage, //在第几页找
           pageSize: 10,
         })
@@ -156,119 +161,8 @@ export default {
           console.log('===========打印的res对象 ---res2--- ', res);
           // todo 如何才能从res里面取到正确的属性，把需要的数组数据显示在表格上
           //tableData是数组，要求res1也是数组
-          const mockData = [
-            {
-              id: 1,
-              name1: 'aaa',
-              name2: 'a',
-              address2: '京',
-              address1: '北京',
-              price: 18.0,
-              PaymentStatus: '支付成功',
-            },
-            {
-              id: 2,
-              name1: 'bbb',
-              name2: 'b',
-              address2: '上海',
-              address1: '上海',
-              price: 15.0,
-              PaymentStatus: '待支付',
-            },
-            {
-              id: 3,
-              name1: 'ccc',
-              name2: 'c',
-              address2: '长沙',
-              address1: '长沙',
-              price: 10.0,
-              PaymentStatus: '已发货',
-            },
-            {
-              id: 4,
-              name1: 'ddd',
-              name2: 'd',
-              address2: '北京',
-              address1: '北京',
-              price: 18.0,
-              PaymentStatus: '支付成功',
-            },
-            {
-              id: 5,
-              name1: 'eee',
-              name2: 'e',
-              address2: '北京',
-              address1: '北京',
-              price: 18.0,
-              PaymentStatus: '支付成功',
-            },
-            {
-              id: 6,
-              name1: 'fff',
-              name2: 'f',
-              address2: '北京',
-              address1: '北京',
-              price: 18.0,
-              PaymentStatus: '支付成功',
-            },
-            {
-              id: 7,
-              name1: 'ggg',
-              name2: 'g',
-              address2: '北京',
-              address1: '北京',
-              price: 18.0,
-              PaymentStatus: '支付成功',
-            },
-            {
-              id: 8,
-              name1: 'hhh',
-              name2: 'h',
-              address2: '北京',
-              address1: '北京',
-              price: 18.0,
-              PaymentStatus: '支付成功',
-            },
-            {
-              id: 9,
-              name1: 'iii',
-              name2: 'i',
-              address2: '北京',
-              address1: '北京',
-              price: 18.0,
-              PaymentStatus: '支付成功',
-            },
-            {
-              id: 10,
-              name1: 'jjj',
-              name2: 'j',
-              address2: '北京',
-              address1: '北京',
-              price: 18.0,
-              PaymentStatus: '支付成功',
-            },
-            {
-              id: 11,
-              name1: 'lll',
-              name2: 'l',
-              address2: '北京',
-              address1: '北京',
-              price: 18.0,
-              PaymentStatus: '支付成功',
-            },
-            {
-              id: 12,
-              name1: 'mmm',
-              name2: 'm',
-              address2: '北京',
-              address1: '北京',
-              price: 18.0,
-              PaymentStatus: '支付成功',
-            },
-          ];
-          const data = res.data;
-          this.tableData = mockData;
-          this.total = data.total;
+          this.tableData = res.list;
+          this.total = res.total;
         })
         .finally(() => {
           this.loading = false;
@@ -285,31 +179,36 @@ export default {
       this.dialogFormVisible = true;
     },
     //提交
-    submit() {
+    submit(formName) {
       this.dialogFormVisible = false;
-      //还未做
-      axios
-        //，后台网站地址暂时不知道，网址虚的
-        .post('http://localhost:5000/users/' + this.type, {
+      //新增校验----不行
+      console.log(this.$refs, '===========打印的 ------ submit');
+      console.log(this.$refs[formName], '===========打印的 ------ submit');
+
+      // this.$refs[dialogForm].validate((valid) => {
+      if (this.shopName && this.username && this.shopAddress && this.address && this.phoneNumber) {
+        alert('新增成功');
+      } else {
+        alert('请输入完整信息!');
+        this.dialogFormVisible = true;
+      }
+      request
+        .post('order/page', {
           //发送的
           shopName: this.form.shopName,
-          name: this.form.name,
+          username: this.form.username,
           shopAddress: this.form.shopAddress,
-          address1: this.form.address1,
+          address: this.form.address,
           phoneNumber: this.form.phoneNumber,
           remarks: this.form.remarks,
         })
-        //发送成功，然后做什么，没有成功，不会做下面的方法
         .then((res) => {
           console.log(res, '===========打印的 ------ res');
           const success = res.data.success;
-          if (success) {
-            this.$message.success('提交成功');
-            this.getData();
-            this.dialogFormVisible = false;
-          } else {
-            this.$message.error(res.data.msg);
-          }
+          console.log(res, '===========打印的 ------ res');
+          this.$message.success('提交成功');
+          this.getData();
+          this.dialogFormVisible = false;
         });
     },
     //编辑
@@ -322,8 +221,8 @@ export default {
     //删除
     remove(item) {
       console.log(item, '===========打印的 ------ remove');
-      axios
-        .post('http://localhost:5000/users/delete', {
+      request
+        .post('order/' + this.type, {
           //把item.id传过去，并赋值为id
           id: item.id,
         })
@@ -331,6 +230,9 @@ export default {
           this.getData();
         });
     },
+    // handleCurrentChange(val) {
+    //   this.currentRow = val;
+    // },
   },
 };
 </script>

@@ -3,19 +3,8 @@
     <!--    搜索栏-->
     <div class="header">
       <el-form :inline="true" :model="formInline" class="demo-form-inline" ref="form">
-        <el-form-item label="ID" prop="id">
-          <el-input v-model="formInline.id" placeholder="ID" />
-        </el-form-item>
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="formInline.username"></el-input>
-        </el-form-item>
-        <el-form-item label="支付状态" prop="status">
-          <el-select v-model="formInline.status" placeholder="支付状态">
-            <el-option label="待支付" value="1" />
-            <el-option label="支付成功" value="2" />
-            <el-option label="已发货" value="3" />
-            <el-option label="已取消" value="4" />
-          </el-select>
+        <el-form-item label="商品名称" prop="shopName">
+          <el-input v-model="formInline.productName" placeholder="商品名称" />
         </el-form-item>
         <el-form-item>
           <!--          搜索：先把要搜索的数据传给后台，后台反馈回来，把后台数据赋值给表格数据-->
@@ -33,13 +22,12 @@
     </div>
     <!--    列表栏-->
     <el-table v-loading="loading" :data="tableData" element-loading-text="Loading" border fit highlight-current-row>
-      <el-table-column prop="id" align="center" label="ID" width="95"> </el-table-column>
+      <!--      <el-table :data="tableData" highlight-current-row @current-change="handleCurrentChange" style="width: 100%">-->
       <el-table-column prop="shopName" label="店铺名称" width="120" />
-      <el-table-column prop="name" label="用户名称" width="100" />
-      <el-table-column prop="price" label="订单价格" width="100" />
-      <el-table-column prop="PaymentStatus" label="支付状态" width="110" />
       <el-table-column prop="shopAddress" label="店铺地址" width="250" />
-      <el-table-column prop="address1" label="收货地址" width="250" />
+      <el-table-column prop="username" label="用户名称" width="100" />
+      <el-table-column prop="phoneNumber" label="电话号码" width="120" />
+      <el-table-column prop="address" label="收货地址" width="250" />
       <el-table-column prop="action" label="操作" align="center">
         <!--slot插槽，用#代替了并给了参数row，这里都用row来写        -->
         <template v-slot="{ row }">
@@ -62,40 +50,31 @@
     </div>
     <!--    新增栏/编辑栏 是2.几版本的和3,。几的不一样-->
     <!--    :visible.sync和v-model-->
-    <el-dialog title="信息编辑" :visible.sync="dialogFormVisible">
-      <el-form ref="dialogForm" :model="form" label-width="80px" class="form">
-        <el-form-item label="店铺名称">
+    <el-dialog title="客户信息编辑" :visible.sync="dialogFormVisible">
+      <el-form ref="dialogForm" :model="form" label-width="80px" class="form" :rules="rules">
+        <el-form-item label="店铺名称" prop="shopName">
           <el-input v-model="form.shopName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="用户名称">
-          <el-input v-model="form.username" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="订单价格">
-          <el-input v-model="form.price" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="支付状态" prop="PaymentStatus">
-          <el-select v-model="form.PaymentStatus" placeholder="支付状态">
-            <!--            <el-option label="PaymentStatus" value="PaymentStatus.value" />-->
-            <el-option label="待支付" value="1" />
-            <el-option label="支付成功" value="2" />
-            <el-option label="已发货" value="3" />
-            <el-option label="已取消" value="4" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="店铺地址">
+        <el-form-item label="店铺地址" prop="shopAddress" placeholder="请填写地址">
           <el-input v-model="form.shopAddress" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="收货地址">
+        <el-form-item label="用户名称" prop="username">
+          <el-input v-model="form.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="联系电话" prop="phoneNumber">
+          <el-input v-model="form.phoneNumber" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="收货地址" prop="address" placeholder="请填写地址">
           <el-input v-model="form.address" autocomplete="off"></el-input>
         </el-form-item>
-        <!--        <el-form-item label="备注">-->
-        <!--          <el-input v-model="form.remarks" autocomplete="off" type="textarea"></el-input>-->
-        <!--        </el-form-item>-->
+        <el-form-item label="备注">
+          <el-input v-model="form.remarks" autocomplete="off" type="textarea"></el-input>
+        </el-form-item>
       </el-form>
       <template #footer>
         <!--        当他为f的时候看不见，当他为T的时候出现-->
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submit">确 定</el-button>
+        <el-button type="primary" @click="submit(form)">确 定</el-button>
       </template>
     </el-dialog>
   </div>
@@ -122,9 +101,7 @@ export default {
     return {
       //搜索栏
       formInline: {
-        id: '',
-        username: '',
-        status: '',
+        productName: '',
       },
       //新增栏
       type: 'add', // edit
@@ -134,13 +111,26 @@ export default {
         username: '', //用户名称
         shopAddress: '', //店铺地址
         address: '', //收货地址
-        price: '', //price价格
-        PaymentStatus: '', //支付状态
+        phoneNumber: '', //电话号码
+        remarks: '', //备注
       },
       loading: false,
       tableData: null,
       currentPage: 1,
       total: 0,
+      rules: {
+        shopName: [
+          { required: true, message: '请输入店铺名称', trigger: 'blur' },
+          { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' },
+        ],
+        username: [
+          { required: true, message: '请输入用户名称', trigger: 'blur' },
+          { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' },
+        ],
+        shopAddress: [{ required: true, message: '请填写地址', trigger: 'blur' }],
+        address: [{ required: true, message: '请填写地址', trigger: 'blur' }],
+        phoneNumber: [{ required: true, message: '请填写电话号码', trigger: 'blur' }],
+      },
     };
   },
   created() {
@@ -158,9 +148,8 @@ export default {
       this.loading = true;
       request
         .post('order/page', {
-          id: this.formInline.id,
+          shopName: this.formInline.shopName,
           username: this.formInline.username,
-          PaymentStatus: this.formInline.PaymentStatus,
           pageNum: this.currentPage, //在第几页找
           pageSize: 10,
         })
@@ -186,21 +175,32 @@ export default {
       this.dialogFormVisible = true;
     },
     //提交
-    submit() {
+    submit(formName) {
       this.dialogFormVisible = false;
+      //新增校验----不行
+      console.log(this.$refs, '===========打印的 ------ submit');
+      console.log(this.$refs[formName], '===========打印的 ------ submit');
+
+      // this.$refs[dialogForm].validate((valid) => {
+      if (this.shopName && this.username && this.shopAddress && this.address && this.phoneNumber) {
+        alert('新增成功');
+      } else {
+        alert('请输入完整信息!');
+        this.dialogFormVisible = true;
+      }
       request
-        .post('order/' + this.type, {
+        .post('order/page', {
           //发送的
-          id: this.form.id,
           shopName: this.form.shopName,
           username: this.form.username,
           shopAddress: this.form.shopAddress,
           address: this.form.address,
-          price: this.form.price,
-          PaymentStatus: this.form.PaymentStatus,
+          phoneNumber: this.form.phoneNumber,
+          remarks: this.form.remarks,
         })
-        //发送成功，然后做什么，没有成功，不会做下面的方法
         .then((res) => {
+          console.log(res, '===========打印的 ------ res');
+          const success = res.data.success;
           console.log(res, '===========打印的 ------ res');
           this.$message.success('提交成功');
           this.getData();
@@ -226,6 +226,9 @@ export default {
           this.getData();
         });
     },
+    // handleCurrentChange(val) {
+    //   this.currentRow = val;
+    // },
   },
 };
 </script>
