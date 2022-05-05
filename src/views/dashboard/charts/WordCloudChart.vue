@@ -149,12 +149,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.chart-title {
-  font-size: 24px;
-  font-weight: 500;
-  margin-bottom: 20px;
-  text-align: center;
-}
 .wordCloud-box {
   width: 690px;
 }
@@ -165,7 +159,7 @@ export default {
 }
 .cloud-img {
   position: absolute;
-  top: 125px;
+  top: 155px;
   z-index: -1;
 }
 </style>
