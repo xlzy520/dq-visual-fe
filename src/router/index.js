@@ -6,6 +6,14 @@ Vue.use(Router);
 /* Layout */
 import Layout from '@/layout';
 
+import MapChart from '@/views/dashboard/charts/MapChart';
+import WordCloudChart from '@/views/dashboard/charts/WordCloudChart';
+import TradeAmountCount from '@/views/dashboard/charts/TradeAmountCount';
+import MainTradeCount from '@/views/dashboard/charts/MainTradeCount';
+import SaleDetail from '@/views/dashboard/charts/SaleDetail';
+import EconomicBenefits from '@/views/dashboard/charts/EconomicBenefits';
+import Funnel from '@/views/dashboard/charts/Funnel';
+
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -46,13 +54,50 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/chart1',
+    meta: { title: '图表模块', icon: 'el-icon-s-help' },
     children: [
       {
-        path: 'dashboard',
-        name: 'Dashboard',
-        component: () => import('@/views/dashboard/index'),
-        meta: { title: 'Dashboard', icon: 'dashboard' },
+        path: 'chart1',
+        name: '中国各省份用电量的分布',
+        component: MapChart,
+        meta: { title: '中国各省份用电量的分布', icon: 'dashboard' },
+      },
+      {
+        path: 'chart2',
+        name: '电气设备热点搜索',
+        component: WordCloudChart,
+        meta: { title: '电气设备热点搜索', icon: 'dashboard' },
+      },
+      {
+        path: 'chart3',
+        name: '不同类型电机出进口额的统计',
+        component: TradeAmountCount,
+        meta: { title: '不同类型电机出进口额的统计', icon: 'dashboard' },
+      },
+      {
+        path: 'chart4',
+        name: '我国电机出口主要贸易统计',
+        component: MainTradeCount,
+        meta: { title: '我国电机出口主要贸易统计', icon: 'dashboard' },
+      },
+      {
+        path: 'chart5',
+        name: '电机企业近5年销售情况图',
+        component: SaleDetail,
+        meta: { title: '电机企业近5年销售情况图', icon: 'dashboard' },
+      },
+      {
+        path: 'chart6',
+        name: '电机企业的经济效益图',
+        component: EconomicBenefits,
+        meta: { title: '电机企业的经济效益图', icon: 'dashboard' },
+      },
+      {
+        path: 'chart7',
+        name: '用户购买电机转化率统计',
+        component: Funnel,
+        meta: { title: '用户购买电机转化率统计', icon: 'dashboard' },
       },
     ],
   },

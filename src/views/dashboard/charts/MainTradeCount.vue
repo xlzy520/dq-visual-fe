@@ -1,5 +1,5 @@
 <template>
-  <div class="TradeAmountCount-box">
+  <div class="charts-box TradeAmountCount-box">
     <div class="chart-title">我国电机出口主要贸易统计</div>
     <div class="wordCloud-chart" ref="chart"></div>
   </div>
@@ -272,8 +272,9 @@ export default {
 
 <style lang="scss" scoped>
 .wordCloud-chart {
-  width: 800px;
+  width: 80%;
   height: 600px;
+  margin: auto;
 }
 .two-chart {
   display: flex;
