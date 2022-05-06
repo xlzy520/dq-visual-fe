@@ -63,14 +63,14 @@
     <!--    新增栏/编辑栏 是2.几版本的和3,。几的不一样-->
     <!--    :visible.sync和v-model-->
     <el-dialog title="信息编辑" :visible.sync="dialogFormVisible">
-      <el-form ref="dialogForm" :model="form" label-width="80px" class="form">
-        <el-form-item label="店铺名称">
+      <el-form ref="dialogForm" :model="form" label-width="80px" class="form" :rules="rules">
+        <el-form-item label="店铺名称" prop="shopName">
           <el-input v-model="form.shopName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="用户名称">
+        <el-form-item label="用户名称" prop="username">
           <el-input v-model="form.username" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="订单价格">
+        <el-form-item label="订单价格" prop="price">
           <el-input v-model="form.price" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="支付状态" prop="PaymentStatus">
@@ -82,10 +82,10 @@
             <el-option label="已取消" value="4" />
           </el-select>
         </el-form-item>
-        <el-form-item label="店铺地址">
+        <el-form-item label="店铺地址 " prop="shopAddress">
           <el-input v-model="form.shopAddress" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="收货地址">
+        <el-form-item label="收货地址" prop="address">
           <el-input v-model="form.address" autocomplete="off"></el-input>
         </el-form-item>
         <!--        <el-form-item label="备注">-->
@@ -95,7 +95,7 @@
       <template #footer>
         <!--        当他为f的时候看不见，当他为T的时候出现-->
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submit">确 定</el-button>
+        <el-button type="primary" @click="submit('dialogForm')">确 定</el-button>
       </template>
     </el-dialog>
   </div>
@@ -141,6 +141,20 @@ export default {
       tableData: null,
       currentPage: 1,
       total: 0,
+      rules: {
+        shopName: [
+          { required: true, message: '请输入店铺名称', trigger: 'blur' },
+          { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' },
+        ],
+        username: [
+          { required: true, message: '请输入用户名称', trigger: 'blur' },
+          { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' },
+        ],
+        shopAddress: [{ required: true, message: '请填写地址', trigger: 'blur' }],
+        address: [{ required: true, message: '请填写地址', trigger: 'blur' }],
+        price: [{ required: true, message: '请填写价格', trigger: 'blur' }],
+        PaymentStatus: [{ required: true, message: '请填写支付状态', trigger: 'blur' }],
+      },
     };
   },
   created() {
@@ -186,8 +200,17 @@ export default {
       this.dialogFormVisible = true;
     },
     //提交
-    submit() {
+    submit(formName) {
       this.dialogFormVisible = false;
+      //表单校验---有前台做了，后台还未修改
+      this.$refs.dialogForm.validate((valid) => {
+        if (valid) {
+          alert('提交成功');
+        } else {
+          alert('提交失败');
+          this.dialogFormVisible = true;
+        }
+      });
       request
         .post('order/' + this.type, {
           //发送的
@@ -218,7 +241,7 @@ export default {
     remove(item) {
       console.log(item, '===========打印的 ------ remove');
       request
-        .post('order/' + this.type, {
+        .post('order/delete', {
           //把item.id传过去，并赋值为id
           id: item.id,
         })

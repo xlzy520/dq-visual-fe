@@ -3,7 +3,7 @@
     <!--    搜索栏-->
     <div class="header">
       <el-form :inline="true" :model="formInline" class="demo-form-inline" ref="form">
-        <el-form-item label="商品名称" prop="shopName">
+        <el-form-item label="商品名称" prop="productName">
           <el-input v-model="formInline.productName" placeholder="商品名称" />
         </el-form-item>
         <el-form-item>
@@ -22,12 +22,11 @@
     </div>
     <!--    列表栏-->
     <el-table v-loading="loading" :data="tableData" element-loading-text="Loading" border fit highlight-current-row>
-      <!--      <el-table :data="tableData" highlight-current-row @current-change="handleCurrentChange" style="width: 100%">-->
-      <el-table-column prop="shopName" label="店铺名称" width="120" />
-      <el-table-column prop="shopAddress" label="店铺地址" width="250" />
-      <el-table-column prop="username" label="用户名称" width="100" />
-      <el-table-column prop="phoneNumber" label="电话号码" width="120" />
-      <el-table-column prop="address" label="收货地址" width="250" />
+      <el-table-column prop="productName" label="商品名称"> </el-table-column>
+      <el-table-column prop="power" label="功率" />
+      <el-table-column prop="exportValue" label="出口额/万美金" />
+      <el-table-column prop="importValue" label="进口额/万美金" />
+      <el-table-column prop="exportShare" label="出口占比" />
       <el-table-column prop="action" label="操作" align="center">
         <!--slot插槽，用#代替了并给了参数row，这里都用row来写        -->
         <template v-slot="{ row }">
@@ -48,33 +47,32 @@
       <el-pagination :page-size="10" layout="prev, pager, next" :total="total" @current-change="changePage">
       </el-pagination>
     </div>
-    <!--    新增栏/编辑栏 是2.几版本的和3,。几的不一样-->
-    <!--    :visible.sync和v-model-->
-    <el-dialog title="客户信息编辑" :visible.sync="dialogFormVisible">
+    <!--    新增栏/编辑栏 是2.几版本的和3,。几的不一样 :visible.sync和v-model-->
+    <el-dialog title="信息编辑" :visible.sync="dialogFormVisible">
       <el-form ref="dialogForm" :model="form" label-width="80px" class="form" :rules="rules">
-        <el-form-item label="店铺名称" prop="shopName">
-          <el-input v-model="form.shopName" autocomplete="off"></el-input>
+        <el-form-item label="商品名称" prop="productName">
+          <el-input v-model="form.productName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="店铺地址" prop="shopAddress" placeholder="请填写地址">
-          <el-input v-model="form.shopAddress" autocomplete="off"></el-input>
+        <el-form-item label="功率" prop="power">
+          <el-input v-model="form.power" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="用户名称" prop="username">
-          <el-input v-model="form.username" autocomplete="off"></el-input>
+        <el-form-item label="出口额/万美金" prop="exportValue">
+          <el-input v-model="form.exportValue" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="联系电话" prop="phoneNumber">
-          <el-input v-model="form.phoneNumber" autocomplete="off"></el-input>
+        <el-form-item label="进口额/万美金 " prop="importValue">
+          <el-input v-model="form.importValue" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="收货地址" prop="address" placeholder="请填写地址">
-          <el-input v-model="form.address" autocomplete="off"></el-input>
+        <el-form-item label="出口占比 " prop="exportShare">
+          <el-input v-model="form.exportShare" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="form.remarks" autocomplete="off" type="textarea"></el-input>
-        </el-form-item>
+        <!--        <el-form-item label="备注">-->
+        <!--          <el-input v-model="form.remarks" autocomplete="off" type="textarea"></el-input>-->
+        <!--        </el-form-item>-->
       </el-form>
       <template #footer>
         <!--        当他为f的时候看不见，当他为T的时候出现-->
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submit(form)">确 定</el-button>
+        <el-button type="primary" @click="submit('dialogForm')">确 定</el-button>
       </template>
     </el-dialog>
   </div>
@@ -107,29 +105,25 @@ export default {
       type: 'add', // edit
       dialogFormVisible: false,
       form: {
-        shopName: '', //店铺名称
-        username: '', //用户名称
-        shopAddress: '', //店铺地址
-        address: '', //收货地址
-        phoneNumber: '', //电话号码
-        remarks: '', //备注
+        productName: '', //商品名称
+        power: '', //功率
+        exportValue: '', //出口额/万美金
+        importValue: '', //进口额/万美金
+        exportShare: '', //出口占比
       },
       loading: false,
       tableData: null,
       currentPage: 1,
       total: 0,
       rules: {
-        shopName: [
+        productName: [
           { required: true, message: '请输入店铺名称', trigger: 'blur' },
           { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' },
         ],
-        username: [
-          { required: true, message: '请输入用户名称', trigger: 'blur' },
-          { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' },
-        ],
-        shopAddress: [{ required: true, message: '请填写地址', trigger: 'blur' }],
-        address: [{ required: true, message: '请填写地址', trigger: 'blur' }],
-        phoneNumber: [{ required: true, message: '请填写电话号码', trigger: 'blur' }],
+        power: [{ required: true, message: '请填写功率', trigger: 'blur' }],
+        exportValue: [{ required: true, message: '请填写地址', trigger: 'blur' }],
+        importValue: [{ required: true, message: '请填写地址', trigger: 'blur' }],
+        exportShare: [{ required: true, message: '请填写价格', trigger: 'blur' }],
       },
     };
   },
@@ -148,8 +142,7 @@ export default {
       this.loading = true;
       request
         .post('order/page', {
-          shopName: this.formInline.shopName,
-          username: this.formInline.username,
+          productName: this.formInline.productName,
           pageNum: this.currentPage, //在第几页找
           pageSize: 10,
         })
@@ -176,31 +169,32 @@ export default {
     },
     //提交
     submit(formName) {
-      this.dialogFormVisible = false;
-      //新增校验----不行
-      console.log(this.$refs, '===========打印的 ------ submit');
-      console.log(this.$refs[formName], '===========打印的 ------ submit');
-
-      // this.$refs[dialogForm].validate((valid) => {
-      if (this.shopName && this.username && this.shopAddress && this.address && this.phoneNumber) {
-        alert('新增成功');
-      } else {
-        alert('请输入完整信息!');
-        this.dialogFormVisible = true;
-      }
+      //表单校验---有前台做了，后台还未修改
+      this.$refs.dialogForm.validate((valid) => {
+        if (valid) {
+          alert('提交成功');
+          this.dialogFormVisible = false;
+        } else {
+          alert('提交失败');
+          this.dialogFormVisible = true;
+        }
+      });
       request
-        .post('order/page', {
+        .post('order/' + this.type, {
           //发送的
-          shopName: this.form.shopName,
-          username: this.form.username,
-          shopAddress: this.form.shopAddress,
-          address: this.form.address,
-          phoneNumber: this.form.phoneNumber,
-          remarks: this.form.remarks,
+          // productName: '', //商品名称
+          // power: '', //功率
+          // exportValue: '', //出口额/万美金
+          // importValue: '', //进口额/万美金
+          // exportShare: '', //出口占比
+          productName: this.form.productName,
+          power: this.form.power,
+          exportValue: this.form.exportValue,
+          importValue: this.form.importValue,
+          exportShare: this.form.exportShare,
         })
+        //发送成功，然后做什么，没有成功，不会做下面的方法
         .then((res) => {
-          console.log(res, '===========打印的 ------ res');
-          const success = res.data.success;
           console.log(res, '===========打印的 ------ res');
           this.$message.success('提交成功');
           this.getData();
@@ -218,7 +212,7 @@ export default {
     remove(item) {
       console.log(item, '===========打印的 ------ remove');
       request
-        .post('order/' + this.type, {
+        .post('order/delete', {
           //把item.id传过去，并赋值为id
           id: item.id,
         })
@@ -226,9 +220,9 @@ export default {
           this.getData();
         });
     },
-    // handleCurrentChange(val) {
-    //   this.currentRow = val;
-    // },
+  },
+  mounted() {
+    this.getData();
   },
 };
 </script>

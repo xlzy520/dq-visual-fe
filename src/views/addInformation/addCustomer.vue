@@ -77,7 +77,7 @@
       <template #footer>
         <!--        当他为f的时候看不见，当他为T的时候出现-->
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submit(form)">确 定</el-button>
+        <el-button type="primary" @click="submit('dialogForm')">确 定</el-button>
       </template>
     </el-dialog>
   </div>
@@ -172,7 +172,7 @@ export default {
     resetForm() {
       this.$refs.form.resetFields();
     },
-    // 新增
+    // 新增G5
     add() {
       this.type = 'add';
       this.form = {};
@@ -182,16 +182,21 @@ export default {
     submit(formName) {
       this.dialogFormVisible = false;
       //新增校验----不行
-      console.log(this.$refs, '===========打印的 ------ submit');
-      console.log(this.$refs[formName], '===========打印的 ------ submit');
+      console.log(formName, '===========打印的 ------ submit');
+      console.log(this.$refs, '===========打印的 ------ 1');
+      console.log(this.$refs[formName], '===========打印的 ------ 2');
+      this.$refs.dialogForm.validate((valid) => {
+        if (valid) {
+          alert('提交成功');
+        } else {
+          alert('提交失败');
+          this.dialogFormVisible = true;
+          return;
+        }
+      });
 
       // this.$refs[dialogForm].validate((valid) => {
-      if (this.shopName && this.username && this.shopAddress && this.address && this.phoneNumber) {
-        alert('新增成功');
-      } else {
-        alert('请输入完整信息!');
-        this.dialogFormVisible = true;
-      }
+
       request
         .post('order/page', {
           //发送的
@@ -203,11 +208,13 @@ export default {
           remarks: this.form.remarks,
         })
         .then((res) => {
-          console.log(res, '===========打印的 ------ res');
-          const success = res.data.success;
-          console.log(res, '===========打印的 ------ res');
-          this.$message.success('提交成功');
-          this.getData();
+          // if (this.shopName && this.username && this.shopAddress && this.address && this.phoneNumber) {
+          //   alert('新增成功');
+          // } else {
+          //   alert('请输入完整信息!');
+          //   this.dialogFormVisible = true;
+          // }
+
           this.dialogFormVisible = false;
         });
     },
@@ -222,7 +229,7 @@ export default {
     remove(item) {
       console.log(item, '===========打印的 ------ remove');
       request
-        .post('order/' + this.type, {
+        .post('order/delete', {
           //把item.id传过去，并赋值为id
           id: item.id,
         })

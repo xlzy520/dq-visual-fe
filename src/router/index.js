@@ -65,22 +65,10 @@ export const constantRoutes = [
     meta: { title: 'Example', icon: 'el-icon-s-help' },
     children: [
       {
-        path: 'table1',
-        name: '订单列表',
-        component: () => import('@/views/table/index'),
-        meta: { title: '订单列表', icon: 'table' },
-      },
-      {
-        path: 'table2',
-        name: '客户列表',
-        component: () => import('@/views/table/index2'),
-        meta: { title: '客户列表', icon: 'table' },
-      },
-      {
-        path: 'table3',
-        name: '电机总类',
-        component: () => import('@/views/table/index3'),
-        meta: { title: '电机总类', icon: 'table' },
+        path: '111',
+        name: '111',
+        component: () => import('@/views/111'),
+        meta: { title: '111', icon: 'table' },
       },
       {
         path: 'tree',
@@ -100,6 +88,66 @@ export const constantRoutes = [
         name: 'Form',
         component: () => import('@/views/form/index'),
         meta: { title: 'Form', icon: 'form' },
+      },
+    ],
+  },
+  {
+    path: '/order',
+    component: Layout,
+    children: [
+      {
+        path: 'order',
+        name: '订单列表',
+        component: () => import('@/views/order/order'),
+        meta: { title: '订单列表', icon: 'table' },
+      },
+    ],
+  },
+  {
+    path: '/customer',
+    component: Layout,
+    children: [
+      {
+        path: 'customer',
+        name: '客户列表',
+        component: () => import('@/views/customer/customer'),
+        meta: { title: '客户列表', icon: 'table' },
+      },
+    ],
+  },
+  {
+    path: '/motorType',
+    component: Layout,
+    children: [
+      {
+        path: 'motorType',
+        name: '电机种类',
+        component: () => import('@/views/motorType/motorType'),
+        meta: { title: '电机种类', icon: 'table' },
+      },
+    ],
+  },
+  {
+    path: '/addCustomer',
+    component: Layout,
+    children: [
+      {
+        path: 'addCustomer',
+        name: '添加企业信息',
+        component: () => import('@/views/addInformation/addCustomer'),
+        meta: { title: '添加企业信息', icon: 'table' },
+      },
+    ],
+  },
+  {
+    path: '/addMotorType',
+    component: Layout,
+    children: [
+      {
+        path: 'addMotorType',
+        name: '添加电机种类',
+        component: () => import('@/views/addInformation/addMotorType'),
+        meta: { title: '添加电机种类', icon: 'table' },
       },
     ],
   },
