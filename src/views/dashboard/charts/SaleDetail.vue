@@ -1,5 +1,5 @@
 <template>
-  <div class="TradeAmountCount-box">
+  <div class="charts-box TradeAmountCount-box">
     <div class="chart-title">电机企业近5年销售情况图</div>
     <div class="wordCloud-chart" ref="chart"></div>
   </div>
@@ -171,7 +171,8 @@ export default {
 
 <style lang="scss" scoped>
 .wordCloud-chart {
-  width: 800px;
+  width: 80%;
+  margin: auto;
   height: 600px;
 }
 .two-chart {

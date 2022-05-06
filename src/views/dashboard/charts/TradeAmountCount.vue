@@ -1,10 +1,8 @@
 <template>
-  <div class="TradeAmountCount-box">
+  <div class="charts-box TradeAmountCount-box">
     <div class="chart-title">不同类型电机出进口额的统计</div>
-    <div class="two-chart">
-      <div class="wordCloud-chart" ref="lineChart"></div>
-      <div class="wordCloud-chart" ref="pieChart"></div>
-    </div>
+    <div class="wordCloud-chart" ref="lineChart"></div>
+    <div class="wordCloud-chart" ref="pieChart"></div>
   </div>
 </template>
 
@@ -348,12 +346,13 @@ export default {
 
 <style lang="scss" scoped>
 .wordCloud-chart {
-  width: 49%;
-  height: 415px;
+  height: 375px;
+  margin-top: 30px;
 }
 .two-chart {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-direction: column;
 }
 </style>

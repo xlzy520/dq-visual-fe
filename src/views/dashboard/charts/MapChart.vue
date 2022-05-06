@@ -1,5 +1,5 @@
 <template>
-  <div class="map-chart-box">
+  <div class="charts-box map-chart-box">
     <div class="chart-title">中国各省份用电量的分布</div>
     <div class="map-chart" ref="mapChart"></div>
   </div>

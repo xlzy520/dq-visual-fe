@@ -1,5 +1,5 @@
 <template>
-  <div class="wordCloud-box">
+  <div class="charts-box wordCloud-box">
     <div class="chart-title">电气设备热点搜索</div>
     <div class="wordCloud-chart" ref="wordCloud"></div>
     <img
@@ -150,16 +150,19 @@ export default {
 
 <style lang="scss" scoped>
 .wordCloud-box {
-  width: 690px;
+  width: 1290px;
+  margin: auto;
 }
 .wordCloud-chart {
-  width: 690px;
-  height: 415px;
+  width: 1290px;
+  height: 774px;
   opacity: 0.7;
 }
 .cloud-img {
+  width: 1290px;
   position: absolute;
-  top: 155px;
+  top: 98px;
   z-index: -1;
+  object-fit: contain;
 }
 </style>
