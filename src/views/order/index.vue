@@ -6,8 +6,8 @@
         <el-form-item label="ID" prop="id">
           <el-input v-model="formInline.id" placeholder="ID" />
         </el-form-item>
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="formInline.username"></el-input>
+        <el-form-item label="企业名称" prop="shopName">
+          <el-input v-model="formInline.shopName"></el-input>
         </el-form-item>
         <el-form-item label="支付状态" prop="status">
           <el-select v-model="formInline.status" placeholder="支付状态">
@@ -33,17 +33,24 @@
     </div>
     <!--    列表栏-->
     <el-table v-loading="loading" :data="tableData" element-loading-text="Loading" fit highlight-current-row>
-      <el-table-column prop="id" align="center" label="ID" width="70"> </el-table-column>
-      <el-table-column prop="shopName" label="店铺名称" width="120" />
-      <el-table-column prop="name" label="用户名称" width="90" />
+      <el-table-column prop="serial" label="序号" width="50">
+        <template v-slot="{ $index, row }"> {{ serial($index) }} </template>
+      </el-table-column>
+      <el-table-column prop="id" align="center" label="ID" width="100">
+        <template v-slot="{ row }">
+          {{ row.id.substring(0, 8) }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="shopName" label="企业名称" width="120" />
+      <el-table-column prop="username" label="联系人" width="90" />
       <el-table-column prop="price" label="订单价格" width="90" />
       <el-table-column prop="PaymentStatus" label="支付状态" width="90">
         <template v-slot="{ row }">
           {{ formatStatus(row.PaymentStatus) }}
         </template>
       </el-table-column>
-      <el-table-column prop="shopAddress" label="店铺地址" width="180" />
-      <el-table-column prop="address1" label="收货地址" width="180" />
+      <el-table-column prop="shopAddress" label="企业地址" width="180" />
+      <el-table-column prop="address" label="收货地址" width="180" />
       <el-table-column prop="updateTime" label="更新时间">
         <template v-slot="{ row }">
           {{ formatTime(row.updateTime) }}
@@ -73,10 +80,10 @@
     <!--    :visible.sync和v-model-->
     <el-dialog title="信息编辑" :visible.sync="dialogFormVisible">
       <el-form ref="dialogForm" :model="form" label-width="80px" class="form" :rules="rules">
-        <el-form-item label="店铺名称" prop="shopName">
+        <el-form-item label="企业名称" prop="shopName">
           <el-input v-model="form.shopName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="用户名称" prop="username">
+        <el-form-item label="联系人" prop="username">
           <el-input v-model="form.username" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="订单价格" prop="price">
@@ -91,7 +98,7 @@
             <el-option label="已取消" value="4" />
           </el-select>
         </el-form-item>
-        <el-form-item label="店铺地址 " prop="shopAddress">
+        <el-form-item label="企业地址 " prop="shopAddress">
           <el-input v-model="form.shopAddress" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="收货地址" prop="address">
@@ -133,16 +140,17 @@ export default {
       //搜索栏
       formInline: {
         id: '',
-        username: '',
+        shopName: '',
         status: '',
       },
       //新增栏
       type: 'add', // edit
       dialogFormVisible: false,
       form: {
-        shopName: '', //店铺名称
-        username: '', //用户名称
-        shopAddress: '', //店铺地址
+        serial: '',
+        shopName: '', //企业名称
+        username: '', //联系人
+        shopAddress: '', //企业地址
         address: '', //收货地址
         price: '', //price价格
         PaymentStatus: '', //支付状态
@@ -152,8 +160,8 @@ export default {
       currentPage: 1,
       total: 0,
       rules: {
-        shopName: [{ required: true, message: '请输入店铺名称', trigger: 'blur' }],
-        username: [{ required: true, message: '请输入用户名称', trigger: 'blur' }],
+        shopName: [{ required: true, message: '请输入企业名称', trigger: 'blur' }],
+        username: [{ required: true, message: '请输入联系人', trigger: 'blur' }],
         shopAddress: [{ required: true, message: '请填写地址', trigger: 'blur' }],
         address: [{ required: true, message: '请填写地址', trigger: 'blur' }],
         price: [{ required: true, message: '请填写价格', trigger: 'blur' }],
@@ -165,19 +173,26 @@ export default {
     this.getData();
   },
   methods: {
+    serial(index) {
+      console.log(this.currentPage, '===========打印的 ------ serial1');
+      console.log(this.pageSize, '===========打印的 ------ serial2');
+      console.log(index, '===========打印的 ------ serial3');
+
+      return (this.currentPage - 1) * 10 + index + 1;
+    },
     //时间
     formatTime(time) {
       return dayjs(time).format('YYYY-MM-DD ');
     },
     formatStatus(staus) {
       if (staus === '1') {
-        return '成功';
-      } else if (staus === '2') {
         return '待支付';
+      } else if (staus === '2') {
+        return '支付成功';
       } else if (staus === '3') {
-        return '已支付';
+        return '已支发货';
       } else {
-        return 'adssdas';
+        return '已取消';
       }
     },
     //分页，把value传过去
@@ -203,15 +218,6 @@ export default {
           //tableData是数组，要求res1也是数组
           this.tableData = res.list;
           this.total = res.total;
-          if (this.PaymentStatus === '1') {
-            this.PaymentStatus = '待支付';
-          } else if (this.PaymentStatus === '2') {
-            this.PaymentStatus = '支付成功';
-          } else if (this.PaymentStatus === '3') {
-            this.PaymentStatus = '已经发货';
-          } else {
-            this.PaymentStatus = '已取消';
-          }
         })
         .finally(() => {
           this.loading = false;
@@ -229,7 +235,6 @@ export default {
     },
     //提交
     submit(formName) {
-      this.dialogFormVisible = false;
       //表单校验---有前台做了，后台还未修改
       this.$refs.dialogForm.validate((valid) => {
         if (valid) {
@@ -242,6 +247,8 @@ export default {
               this.getData();
               this.dialogFormVisible = false;
             });
+        } else {
+          alert('提交失败');
         }
       });
     },
