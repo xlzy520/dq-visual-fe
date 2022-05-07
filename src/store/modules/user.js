@@ -7,6 +7,7 @@ const getDefaultState = () => {
     token: getToken(),
     name: '',
     avatar: '',
+    id: '',
   };
 };
 
@@ -24,6 +25,9 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar;
+  },
+  SET_ID: (state, id) => {
+    state.id = id;
   },
 };
 
@@ -55,10 +59,11 @@ const actions = {
             return reject('登录失败');
           }
 
-          const { username, avatar = 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif' } = res;
+          const { username, id, avatar = 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif' } = res;
 
           commit('SET_NAME', username);
           commit('SET_AVATAR', avatar);
+          commit('SET_ID', id);
           resolve(res);
         })
         .catch((error) => {
@@ -70,16 +75,10 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token)
-        .then(() => {
-          removeToken(); // must remove  token  first
-          resetRouter();
-          commit('RESET_STATE');
-          resolve();
-        })
-        .catch((error) => {
-          reject(error);
-        });
+      removeToken(); // must remove  token  first
+      resetRouter();
+      commit('RESET_STATE');
+      resolve();
     });
   },
 
