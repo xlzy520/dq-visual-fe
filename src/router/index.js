@@ -101,62 +101,27 @@ export const constantRoutes = [
       },
     ],
   },
-
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
-    children: [
-      {
-        path: '111',
-        name: '111',
-        component: () => import('@/views/111'),
-        meta: { title: '111', icon: 'table' },
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' },
-      },
-    ],
-  },
-
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' },
-      },
-    ],
-  },
   {
     path: '/order',
     component: Layout,
     children: [
       {
-        path: 'order',
+        path: 'index',
         name: '订单列表',
-        component: () => import('@/views/order/order'),
+        component: () => import('@/views/order'),
         meta: { title: '订单列表', icon: 'table' },
       },
     ],
   },
   {
-    path: '/customer',
+    path: '/company',
     component: Layout,
     children: [
       {
-        path: 'customer',
-        name: '客户列表',
-        component: () => import('@/views/customer/customer'),
-        meta: { title: '客户列表', icon: 'table' },
+        path: 'index',
+        name: '企业信息',
+        component: () => import('@/views/company/index'),
+        meta: { title: '企业信息', icon: 'table' },
       },
     ],
   },
@@ -165,34 +130,10 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: 'motorType',
+        path: 'index',
         name: '电机种类',
-        component: () => import('@/views/motorType/motorType'),
+        component: () => import('@/views/motorType/index'),
         meta: { title: '电机种类', icon: 'table' },
-      },
-    ],
-  },
-  {
-    path: '/addCustomer',
-    component: Layout,
-    children: [
-      {
-        path: 'addCustomer',
-        name: '添加企业信息',
-        component: () => import('@/views/addInformation/addCustomer'),
-        meta: { title: '添加企业信息', icon: 'table' },
-      },
-    ],
-  },
-  {
-    path: '/addMotorType',
-    component: Layout,
-    children: [
-      {
-        path: 'addMotorType',
-        name: '添加电机种类',
-        component: () => import('@/views/addInformation/addMotorType'),
-        meta: { title: '添加电机种类', icon: 'table' },
       },
     ],
   },

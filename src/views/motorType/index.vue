@@ -3,8 +3,8 @@
     <!--    搜索栏-->
     <div class="header">
       <el-form :inline="true" :model="formInline" class="demo-form-inline" ref="form">
-        <el-form-item label="商品名称" prop="productName">
-          <el-input v-model="formInline.productName" placeholder="商品名称" />
+        <el-form-item label="电机名称" prop="name">
+          <el-input v-model="formInline.name" placeholder="电机名称" />
         </el-form-item>
         <el-form-item>
           <!--          搜索：先把要搜索的数据传给后台，后台反馈回来，把后台数据赋值给表格数据-->
@@ -21,12 +21,19 @@
       </el-form>
     </div>
     <!--    列表栏-->
-    <el-table v-loading="loading" :data="tableData" element-loading-text="Loading" border fit highlight-current-row>
-      <el-table-column prop="productName" label="商品名称"> </el-table-column>
-      <el-table-column prop="power" label="功率" />
-      <el-table-column prop="exportValue" label="出口额/万美金" />
-      <el-table-column prop="importValue" label="进口额/万美金" />
-      <el-table-column prop="exportShare" label="出口占比" />
+    <el-table v-loading="loading" :data="tableData" element-loading-text="Loading" fit highlight-current-row>
+      <el-table-column prop="name" label="电机名称"> </el-table-column>
+      <el-table-column prop="desc" label="电机简介" />
+      <el-table-column prop="createTime" label="创建时间">
+        <template v-slot="{ row }">
+          {{ formatTime(row.createTime) }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="updateTime" label="更新时间">
+        <template v-slot="{ row }">
+          {{ formatTime(row.updateTime) }}
+        </template>
+      </el-table-column>
       <el-table-column prop="action" label="操作" align="center">
         <!--slot插槽，用#代替了并给了参数row，这里都用row来写        -->
         <template v-slot="{ row }">
@@ -50,24 +57,12 @@
     <!--    新增栏/编辑栏 是2.几版本的和3,。几的不一样 :visible.sync和v-model-->
     <el-dialog title="信息编辑" :visible.sync="dialogFormVisible">
       <el-form ref="dialogForm" :model="form" label-width="80px" class="form" :rules="rules">
-        <el-form-item label="商品名称" prop="productName">
-          <el-input v-model="form.productName" autocomplete="off"></el-input>
+        <el-form-item label="电机名称" prop="name">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="功率" prop="power">
-          <el-input v-model="form.power" autocomplete="off"></el-input>
+        <el-form-item label="电机简介" prop="desc">
+          <el-input v-model="form.desc" autocomplete="off" type="textarea"></el-input>
         </el-form-item>
-        <el-form-item label="出口额/万美金" prop="exportValue">
-          <el-input v-model="form.exportValue" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="进口额/万美金 " prop="importValue">
-          <el-input v-model="form.importValue" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="出口占比 " prop="exportShare">
-          <el-input v-model="form.exportShare" autocomplete="off"></el-input>
-        </el-form-item>
-        <!--        <el-form-item label="备注">-->
-        <!--          <el-input v-model="form.remarks" autocomplete="off" type="textarea"></el-input>-->
-        <!--        </el-form-item>-->
       </el-form>
       <template #footer>
         <!--        当他为f的时候看不见，当他为T的时候出现-->
@@ -79,10 +74,9 @@
 </template>
 
 <script>
-import { Message } from 'element-ui';
-import { getList } from '@/api/table';
-import axios from 'axios';
 import request from '@/utils/request';
+
+import dayjs from 'dayjs';
 
 export default {
   filters: {
@@ -98,32 +92,21 @@ export default {
   data() {
     return {
       //搜索栏
-      formInline: {
-        productName: '',
-      },
+      formInline: {},
       //新增栏
       type: 'add', // edit
       dialogFormVisible: false,
       form: {
-        productName: '', //商品名称
-        power: '', //功率
-        exportValue: '', //出口额/万美金
-        importValue: '', //进口额/万美金
-        exportShare: '', //出口占比
+        name: '', //电机名称
+        desc: '',
       },
       loading: false,
       tableData: null,
       currentPage: 1,
       total: 0,
       rules: {
-        productName: [
-          { required: true, message: '请输入店铺名称', trigger: 'blur' },
-          { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' },
-        ],
-        power: [{ required: true, message: '请填写功率', trigger: 'blur' }],
-        exportValue: [{ required: true, message: '请填写地址', trigger: 'blur' }],
-        importValue: [{ required: true, message: '请填写地址', trigger: 'blur' }],
-        exportShare: [{ required: true, message: '请填写价格', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入电机名称', trigger: 'blur' }],
+        desc: [{ required: true, message: '请填写电机简介', trigger: 'blur' }],
       },
     };
   },
@@ -131,6 +114,9 @@ export default {
     this.getData();
   },
   methods: {
+    formatTime(time) {
+      return dayjs(time).format('YYYY-MM-DD HH:mm:ss');
+    },
     //分页，把value传过去
     changePage(val) {
       console.log(val, '===========打印的 ------ changePage');
@@ -141,8 +127,8 @@ export default {
     getData() {
       this.loading = true;
       request
-        .post('order/page', {
-          productName: this.formInline.productName,
+        .post('category/page', {
+          name: this.formInline.name,
           pageNum: this.currentPage, //在第几页找
           pageSize: 10,
         })
@@ -172,47 +158,27 @@ export default {
       //表单校验---有前台做了，后台还未修改
       this.$refs.dialogForm.validate((valid) => {
         if (valid) {
-          alert('提交成功');
-          this.dialogFormVisible = false;
-        } else {
-          alert('提交失败');
-          this.dialogFormVisible = true;
+          request.post('category/' + this.type, this.form).then((res) => {
+            console.log(res, '===========打印的 ------ res');
+            this.$message.success('提交成功');
+            this.getData();
+            this.dialogFormVisible = false;
+          });
         }
       });
-      request
-        .post('order/' + this.type, {
-          //发送的
-          // productName: '', //商品名称
-          // power: '', //功率
-          // exportValue: '', //出口额/万美金
-          // importValue: '', //进口额/万美金
-          // exportShare: '', //出口占比
-          productName: this.form.productName,
-          power: this.form.power,
-          exportValue: this.form.exportValue,
-          importValue: this.form.importValue,
-          exportShare: this.form.exportShare,
-        })
-        //发送成功，然后做什么，没有成功，不会做下面的方法
-        .then((res) => {
-          console.log(res, '===========打印的 ------ res');
-          this.$message.success('提交成功');
-          this.getData();
-          this.dialogFormVisible = false;
-        });
     },
     //编辑
     edit(row) {
       this.dialogFormVisible = true;
       this.type = 'edit';
       console.log(row, '===========打印的 ------ edit');
-      this.form = row;
+      this.form = { ...row };
     },
     //删除
     remove(item) {
       console.log(item, '===========打印的 ------ remove');
       request
-        .post('order/delete', {
+        .post('category/delete', {
           //把item.id传过去，并赋值为id
           id: item.id,
         })
