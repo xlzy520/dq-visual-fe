@@ -61,7 +61,7 @@
     <!--    新增栏/编辑栏 是2.几版本的和3,。几的不一样-->
     <!--    :visible.sync和v-model-->
     <el-dialog title="信息编辑" :visible.sync="dialogFormVisible">
-      <el-form ref="dialogForm" :model="form" label-width="80px" class="form" :rules="rules">
+      <el-form ref="dialogForm" :model="form" label-width="120px" class="form" :rules="rules">
         <el-form-item label="企业名称" prop="name">
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
@@ -75,7 +75,7 @@
           <el-input v-model="form.phone" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="利润年份" prop="year" placeholder="请填写地址">
-          <el-input v-model="form.year" autocomplete="off"></el-input>
+          <el-date-picker v-model="form.year" type="year" placeholder="选择年"> </el-date-picker>
         </el-form-item>
       </el-form>
       <template #footer>
