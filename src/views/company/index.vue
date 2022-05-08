@@ -74,12 +74,11 @@
         <el-form-item label="联系电话" prop="phone">
           <el-input v-model="form.phone" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="利润年份" prop="year" placeholder="请填写地址">
-          <el-date-picker v-model="form.year" type="year" placeholder="选择年"> </el-date-picker>
+        <el-form-item label="利润年份" prop="year" placeholder="请选择年份">
+          <el-date-picker v-model="form.year" value-format="yyyy" type="year" placeholder="选择年"> </el-date-picker>
         </el-form-item>
       </el-form>
       <template #footer>
-        <!--        当他为f的时候看不见，当他为T的时候出现-->
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="submit('dialogForm')">确 定</el-button>
       </template>
@@ -130,7 +129,14 @@ export default {
         profit: [{ required: true, message: '请输入企业利润', trigger: 'blur' }],
         address: [{ required: true, message: '请填写地址', trigger: 'blur' }],
         year: [{ required: true, message: '请填写利润年份', trigger: 'blur' }],
-        phone: [{ required: true, message: '请填写电话号码', trigger: 'blur' }],
+        phone: [
+          { required: true, message: '请填写电话号码', trigger: 'blur' },
+          {
+            pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/,
+            message: '请填写符合要求的11位手机号',
+            trigger: 'blur',
+          },
+        ],
       },
     };
   },

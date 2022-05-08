@@ -177,8 +177,8 @@ export default {
     // 新增
     add() {
       this.type = 'add';
-      this.form = {};
       this.dialogFormVisible = true;
+      this.$refs.dialogForm.resetFields();
     },
     //提交
     submit(formName) {
@@ -198,60 +198,24 @@ export default {
     edit(row) {
       this.dialogFormVisible = true;
       this.type = 'edit';
-      console.log(row, '===========打印的 ------ edit');
       this.form = { ...row };
     },
     //删除
     remove(item) {
-      console.log(item, '===========打印的 ------ remove');
       request
         .post('category/delete', {
           //把item.id传过去，并赋值为id
           id: item.id,
         })
         .then((res) => {
+          this.$message.success('删除成功');
           this.getData();
         });
     },
-    //  新增图片
-    photo() {
-      this.uploadPhotos = true;
-    },
     handleAvatarSuccess(res, file) {
-      console.log(res.path, '===========打印的 ------ res');
       this.form.imgUrl = res.path;
-      console.log(this.form.imgUrl, '===========打印的 ------ handleAvatarSuccess');
     },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg';
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!');
-      }
-      // if (!isLt2M) {
-      //   this.$message.error('上传头像图片大小不能超过 2MB!');
-      // }
-      //   return isJPG && isLt2M;
-    },
-    // uploadPhotosSubmit() {
-    //   this.$refs.dialogForm.validate((valid) => {
-    //     if (valid) {
-    //       request
-    //         .post('/upload', {
-    //           ...this.form,
-    //         })
-    //         //发送成功，然后做什么，没有成功，不会做下面的方法
-    //         .then((res) => {
-    //           console.log(res, '===========打印的 ------ res');
-    //           this.$message.success('提交成功');
-    //           this.dialogFormVisible = false;
-    //         });
-    //     } else {
-    //       this.$message.success('提交失败');
-    //     }
-    //   });
-    // },
+    beforeAvatarUpload(file) {},
   },
   mounted() {
     this.getData();

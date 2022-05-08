@@ -9,7 +9,7 @@
         <el-form-item label="企业名称" prop="shopName">
           <el-input v-model="formInline.shopName"></el-input>
         </el-form-item>
-        <el-form-item label="支付状态" prop="status">
+        <el-form-item label="支付状态" prop="PaymentStatus">
           <el-select v-model="formInline.PaymentStatus" placeholder="支付状态">
             <el-option v-for="(item, index) in statusList" :key="item" :label="item" :value="index" />
           </el-select>
@@ -159,6 +159,14 @@ export default {
         address: [{ required: true, message: '请填写地址', trigger: 'blur' }],
         price: [{ required: true, message: '请填写价格', trigger: 'blur' }],
         PaymentStatus: [{ required: true, message: '请填写支付状态', trigger: 'blur' }],
+        phone: [
+          { required: true, message: '请填写电话号码', trigger: 'blur' },
+          {
+            pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/,
+            message: '请填写符合要求的11位手机号',
+            trigger: 'blur',
+          },
+        ],
       },
       statusList: ['待支付', '支付成功', '已发货', '已取消'],
     };
@@ -204,7 +212,7 @@ export default {
     },
     // 重置
     resetForm() {
-      this.$refs.form.resetFields();
+      this.formInline = {};
     },
     // 新增
     add() {
@@ -213,21 +221,17 @@ export default {
       this.dialogFormVisible = true;
     },
     //提交
-    submit(formName) {
-      //表单校验---有前台做了，后台还未修改
+    submit() {
       this.$refs.dialogForm.validate((valid) => {
         if (valid) {
           request
             .post('order/' + this.type, this.form)
             //发送成功，然后做什么，没有成功，不会做下面的方法
             .then((res) => {
-              console.log(res, '===========打印的 ------ res');
               this.$message.success('提交成功');
               this.getData();
               this.dialogFormVisible = false;
             });
-        } else {
-          alert('提交失败');
         }
       });
     },
@@ -235,12 +239,10 @@ export default {
     edit(row) {
       this.dialogFormVisible = true;
       this.type = 'edit';
-      console.log(row, '===========打印的 ------ edit');
       this.form = { ...row };
     },
     //删除
     remove(item) {
-      console.log(item, '===========打印的 ------ remove');
       request
         .post('order/delete', {
           //把item.id传过去，并赋值为id
