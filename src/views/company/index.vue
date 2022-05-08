@@ -48,7 +48,7 @@
             cancel-button-text="取消"
             @onConfirm="remove(row)"
           >
-            <el-button slot="reference" size="mini" type="danger" class="remove">移除</el-button>
+            <a slot="reference" class="remove-btn">移除</a>
           </el-popconfirm>
         </template>
       </el-table-column>

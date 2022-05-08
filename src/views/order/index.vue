@@ -10,11 +10,8 @@
           <el-input v-model="formInline.shopName"></el-input>
         </el-form-item>
         <el-form-item label="支付状态" prop="status">
-          <el-select v-model="formInline.status" placeholder="支付状态">
-            <el-option label="待支付" value="1" />
-            <el-option label="支付成功" value="2" />
-            <el-option label="已发货" value="3" />
-            <el-option label="已取消" value="4" />
+          <el-select v-model="formInline.PaymentStatus" placeholder="支付状态">
+            <el-option v-for="(item, index) in statusList" :key="item" :label="item" :value="index" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -49,14 +46,14 @@
           {{ formatStatus(row.PaymentStatus) }}
         </template>
       </el-table-column>
-      <el-table-column prop="shopAddress" label="企业地址" width="180" />
-      <el-table-column prop="address" label="收货地址" width="180" />
-      <el-table-column prop="updateTime" label="更新时间">
+      <el-table-column prop="shopAddress" label="企业地址" width="120" show-tooltip-when-overflow />
+      <el-table-column prop="address" label="收货地址" width="160" show-tooltip-when-overflow />
+      <el-table-column prop="updateTime" label="更新时间" width="">
         <template v-slot="{ row }">
           {{ formatTime(row.updateTime) }}
         </template>
       </el-table-column>
-      <el-table-column prop="action" label="操作" align="center">
+      <el-table-column prop="action" label="操作" width="120" align="center">
         <!--slot插槽，用#代替了并给了参数row，这里都用row来写        -->
         <template v-slot="{ row }">
           <el-button type="text" @click="edit(row)">编辑</el-button>
@@ -66,7 +63,7 @@
             cancel-button-text="取消"
             @onConfirm="remove(row)"
           >
-            <el-button slot="reference" size="mini" type="danger" class="remove">移除</el-button>
+            <a slot="reference" class="remove-btn">移除</a>
           </el-popconfirm>
         </template>
       </el-table-column>
@@ -86,16 +83,16 @@
         <el-form-item label="联系人" prop="username">
           <el-input v-model="form.username" autocomplete="off"></el-input>
         </el-form-item>
+        <el-form-item label="手机号" prop="phone">
+          <el-input v-model="form.phone" autocomplete="off"></el-input>
+        </el-form-item>
         <el-form-item label="订单价格" prop="price">
           <el-input v-model="form.price" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="支付状态" prop="PaymentStatus">
           <el-select v-model="form.PaymentStatus" placeholder="支付状态">
             <!--            <el-option label="PaymentStatus" value="PaymentStatus.value" />-->
-            <el-option label="待支付" value="1" />
-            <el-option label="支付成功" value="2" />
-            <el-option label="已发货" value="3" />
-            <el-option label="已取消" value="4" />
+            <el-option v-for="(item, index) in statusList" :key="item" :label="item" :value="index" />
           </el-select>
         </el-form-item>
         <el-form-item label="企业地址 " prop="shopAddress">
@@ -138,11 +135,7 @@ export default {
   data() {
     return {
       //搜索栏
-      formInline: {
-        id: '',
-        shopName: '',
-        status: '',
-      },
+      formInline: {},
       //新增栏
       type: 'add', // edit
       dialogFormVisible: false,
@@ -167,6 +160,7 @@ export default {
         price: [{ required: true, message: '请填写价格', trigger: 'blur' }],
         PaymentStatus: [{ required: true, message: '请填写支付状态', trigger: 'blur' }],
       },
+      statusList: ['待支付', '支付成功', '已发货', '已取消'],
     };
   },
   created() {
@@ -174,30 +168,17 @@ export default {
   },
   methods: {
     serial(index) {
-      console.log(this.currentPage, '===========打印的 ------ serial1');
-      console.log(this.pageSize, '===========打印的 ------ serial2');
-      console.log(index, '===========打印的 ------ serial3');
-
       return (this.currentPage - 1) * 10 + index + 1;
     },
     //时间
     formatTime(time) {
-      return dayjs(time).format('YYYY-MM-DD ');
+      return dayjs(time).format('YYYY-MM-DD HH:MM:ss');
     },
-    formatStatus(staus) {
-      if (staus === '1') {
-        return '待支付';
-      } else if (staus === '2') {
-        return '支付成功';
-      } else if (staus === '3') {
-        return '已支发货';
-      } else {
-        return '已取消';
-      }
+    formatStatus(status) {
+      return this.statusList[status];
     },
     //分页，把value传过去
     changePage(val) {
-      console.log(val, '===========打印的 ------ changePage');
       this.currentPage = val;
       this.getData();
     },
@@ -206,9 +187,7 @@ export default {
       this.loading = true;
       request
         .post('order/page', {
-          id: this.formInline.id,
-          username: this.formInline.username,
-          PaymentStatus: this.formInline.PaymentStatus,
+          ...this.formInline,
           pageNum: this.currentPage, //在第几页找
           pageSize: 10,
         })

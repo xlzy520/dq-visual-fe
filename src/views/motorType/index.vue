@@ -51,7 +51,7 @@
             cancel-button-text="取消"
             @onConfirm="remove(row)"
           >
-            <el-button slot="reference" size="mini" type="danger" class="remove">移除</el-button>
+            <a slot="reference" class="remove-btn">移除</a>
           </el-popconfirm>
         </template>
       </el-table-column>
@@ -142,7 +142,7 @@ export default {
       this.$refs.dialogForm.resetFields();
     },
     formatTime(time) {
-      return dayjs(time).format('YYYY-MM-DD');
+      return dayjs(time).format('YYYY-MM-DD HH:MM:ss');
     },
     //分页，把value传过去
     changePage(val) {
