@@ -3,8 +3,9 @@
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <breadcrumb class="breadcrumb-container" />
-
     <div class="right-menu">
+      <div class="username">{{ name }}</div>
+
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar + '?imageView2/1/w/80/h/80'" class="user-avatar" />
@@ -23,6 +24,7 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+
     <el-dialog title="修改账号密码" :visible.sync="dialogFormVisible">
       <el-form ref="dialogForm" :model="form" label-width="80px" class="form" :rules="rules">
         <el-form-item label="旧密码" prop="password">
@@ -72,7 +74,7 @@ export default {
     Hamburger,
   },
   computed: {
-    ...mapGetters(['sidebar', 'avatar', 'id']),
+    ...mapGetters(['sidebar', 'avatar', 'id', 'name']),
   },
   methods: {
     //提交账号密码
@@ -147,6 +149,13 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
+    display: flex;
+    .username {
+      font-size: 16px;
+      margin-right: 10px;
+      color: #1296db;
+      font-weight: 500;
+    }
 
     &:focus {
       outline: none;

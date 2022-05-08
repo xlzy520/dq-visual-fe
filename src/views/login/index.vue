@@ -9,7 +9,7 @@
       label-position="left"
     >
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">电器设备可视化系统</h3>
       </div>
 
       <el-form-item prop="username">
@@ -52,12 +52,17 @@
         type="primary"
         style="width: 100%; margin-bottom: 30px"
         @click.native.prevent="handleLogin"
-        >Login</el-button
+        >登录</el-button
       >
 
-      <div class="tips">
-        <span style="margin-right: 20px">username: admin</span>
-        <span> password: any</span>
+      <div class="">
+        <el-button
+          :loading="regLoading"
+          type="success"
+          style="width: 100%; margin-bottom: 30px"
+          @click="handleLogin(false)"
+          >注册</el-button
+        >
       </div>
     </el-form>
   </div>
@@ -70,19 +75,27 @@ export default {
   name: 'Login',
   data() {
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 1) {
-        callback(new Error('The password can not be less than 6 digits'));
+      if (value.length < 6) {
+        callback(new Error('用户名称长度不能低于6位'));
+      } else {
+        callback();
+      }
+    };
+    const validateUserName = (rule, value, callback) => {
+      if (value.length < 4) {
+        callback(new Error('用户名称长度不能低于4位'));
       } else {
         callback();
       }
     };
     return {
+      regLoading: false,
       loginForm: {
-        username: 'zhibi',
-        password: '123456',
+        username: '',
+        password: '',
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur' }],
+        username: [{ required: true, trigger: 'blur', validator: validateUserName }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }],
       },
       loading: false,
@@ -109,18 +122,24 @@ export default {
         this.$refs.password.focus();
       });
     },
-    handleLogin() {
+    handleLogin(isLogin = true) {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          this.loading = true;
+          if (isLogin) {
+            this.loading = true;
+          } else {
+            this.regLoading = true;
+          }
+          const type = isLogin ? 'user/login' : 'user/register';
           this.$store
-            .dispatch('user/login', this.loginForm)
+            .dispatch(type, this.loginForm)
             .then(() => {
               this.$router.push({ path: this.redirect || '/' });
               this.loading = false;
             })
             .catch(() => {
               this.loading = false;
+              this.regLoading = false;
             });
         } else {
           console.log('error submit!!');
