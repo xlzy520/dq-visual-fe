@@ -24,6 +24,12 @@
     <el-table v-loading="loading" :data="tableData" element-loading-text="Loading" fit highlight-current-row>
       <el-table-column prop="name" label="电机名称"> </el-table-column>
       <el-table-column prop="desc" label="电机简介" />
+      <el-table-column prop="imgUrl" label="电机照片">
+        <template v-slot="{ row }">
+          <img :src="row.imgUrl" alt="" class="imgUrl" />
+        </template>
+      </el-table-column>
+
       <el-table-column prop="createTime" label="创建时间">
         <template v-slot="{ row }">
           {{ formatTime(row.createTime) }}
@@ -34,6 +40,7 @@
           {{ formatTime(row.updateTime) }}
         </template>
       </el-table-column>
+
       <el-table-column prop="action" label="操作" align="center">
         <!--slot插槽，用#代替了并给了参数row，这里都用row来写        -->
         <template v-slot="{ row }">
@@ -55,13 +62,26 @@
       </el-pagination>
     </div>
     <!--    新增栏/编辑栏 是2.几版本的和3,。几的不一样 :visible.sync和v-model-->
-    <el-dialog title="信息编辑" :visible.sync="dialogFormVisible">
+    <el-dialog title="信息编辑" :visible.sync="dialogFormVisible" @close="close">
       <el-form ref="dialogForm" :model="form" label-width="80px" class="form" :rules="rules">
         <el-form-item label="电机名称" prop="name">
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="电机简介" prop="desc">
           <el-input v-model="form.desc" autocomplete="off" type="textarea"></el-input>
+        </el-form-item>
+        <el-form-item label="电机照片" prop="imgUrl">
+          <el-upload
+            class="avatar-uploader"
+            action="http://localhost:5001/common/upload"
+            :show-file-list="false"
+            :headers="headers"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload"
+          >
+            <img v-if="form.imgUrl" :src="form.imgUrl" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -77,6 +97,7 @@
 import request from '@/utils/request';
 
 import dayjs from 'dayjs';
+import { getToken } from '@/utils/auth';
 
 export default {
   filters: {
@@ -98,7 +119,8 @@ export default {
       dialogFormVisible: false,
       form: {
         name: '', //电机名称
-        desc: '',
+        desc: '', //简介
+        imgUrl: '', //照片
       },
       loading: false,
       tableData: null,
@@ -108,14 +130,19 @@ export default {
         name: [{ required: true, message: '请输入电机名称', trigger: 'blur' }],
         desc: [{ required: true, message: '请填写电机简介', trigger: 'blur' }],
       },
+      //  新增图片
+      headers: {},
     };
   },
   created() {
     this.getData();
   },
   methods: {
+    close() {
+      this.$refs.dialogForm.resetFields();
+    },
     formatTime(time) {
-      return dayjs(time).format('YYYY-MM-DD HH:mm:ss');
+      return dayjs(time).format('YYYY-MM-DD');
     },
     //分页，把value传过去
     changePage(val) {
@@ -186,13 +213,86 @@ export default {
           this.getData();
         });
     },
+    //  新增图片
+    photo() {
+      this.uploadPhotos = true;
+    },
+    handleAvatarSuccess(res, file) {
+      console.log(res.path, '===========打印的 ------ res');
+      this.form.imgUrl = res.path;
+      console.log(this.form.imgUrl, '===========打印的 ------ handleAvatarSuccess');
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!');
+      }
+      // if (!isLt2M) {
+      //   this.$message.error('上传头像图片大小不能超过 2MB!');
+      // }
+      //   return isJPG && isLt2M;
+    },
+    // uploadPhotosSubmit() {
+    //   this.$refs.dialogForm.validate((valid) => {
+    //     if (valid) {
+    //       request
+    //         .post('/upload', {
+    //           ...this.form,
+    //         })
+    //         //发送成功，然后做什么，没有成功，不会做下面的方法
+    //         .then((res) => {
+    //           console.log(res, '===========打印的 ------ res');
+    //           this.$message.success('提交成功');
+    //           this.dialogFormVisible = false;
+    //         });
+    //     } else {
+    //       this.$message.success('提交失败');
+    //     }
+    //   });
+    // },
   },
   mounted() {
     this.getData();
+    //  新增图片
+
+    this.headers = {
+      Authorization: 'Bearer ' + getToken(),
+    };
   },
 };
 </script>
 <style>
+.imgUrl {
+  width: 100px;
+  height: 100px;
+  text-align: center;
+}
+.avatar-uploader .el-upload {
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+  border: 1px dashed #d9d9d9;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+
 .form {
   display: flex;
   flex-direction: column;
