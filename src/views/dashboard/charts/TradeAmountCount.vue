@@ -88,33 +88,6 @@ export default {
           },
           axisLabel: {},
         },
-        dataZoom: [
-          {
-            show: true,
-            height: 12,
-            xAxisIndex: [0],
-            bottom: '8%',
-            start: 10,
-            end: 90,
-            handleIcon:
-              'path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z',
-            handleSize: '110%',
-            handleStyle: {
-              color: '#d3dee5',
-            },
-            textStyle: {
-              color: '#fff',
-            },
-            borderColor: '#90979c',
-          },
-          {
-            type: 'inside',
-            show: true,
-            height: 15,
-            start: 1,
-            end: 35,
-          },
-        ],
         series: [
           {
             name: '出口额',
