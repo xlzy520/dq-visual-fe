@@ -178,7 +178,9 @@ export default {
     add() {
       this.type = 'add';
       this.dialogFormVisible = true;
-      this.$refs.dialogForm.resetFields();
+      this.$nextTick(() => {
+        this.$refs.dialogForm.resetFields();
+      });
     },
     //提交
     submit(formName) {
